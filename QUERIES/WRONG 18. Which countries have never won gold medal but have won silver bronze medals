@@ -1,0 +1,25 @@
+
+--18. Which countries have never won gold medal but have won silver/bronze medals?
+
+
+WITH tab1 as (
+SELECT Country
+,Coalesce(gold,0) as gold
+,Coalesce(silver,0)as silver
+,Coalesce(Bronze,0) as bronze
+FROM CROSSTAB(
+	'select nr.region as Country, medal, Count(1) as gold_count
+FROM public.olympic_history nh
+JOIN public.olympic_history_noc_regions nr ON nr.noc = nh.noc
+GROUP BY nr.region,medal',
+	'values (''Gold''),(''Slver''),(''Bronze'')'
+)
+As fin_result(Country VARCHAR, Gold BIGINT, Silver Bigint, Bronze BigINT)
+	)
+SELECT country, Gold,  sum(silver) as silve, sum(bronze) as Bronz
+FRom tab1
+WHERE Gold = 0 
+GROUP BY Country,gold
+Order by bronz desc
+
+
